@@ -1,10 +1,12 @@
-package model;
+package input;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.util.Date;
-import java.util.List;
-
-public class Task {
-    private Long id;
+@Data
+@AllArgsConstructor
+public class TaskDTO {
     private String name;
     private String description;
     private Long executor;

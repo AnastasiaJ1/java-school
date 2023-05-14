@@ -1,4 +1,4 @@
 package repositories;
 
-public class TaskRepository {
+public interface TaskRepository {
 }

@@ -1,9 +1,8 @@
-package model;
+package output;
 
 import java.util.Date;
-import java.util.List;
 
-public class Task {
+public class TaskOutDTO {
     private Long id;
     private String name;
     private String description;
