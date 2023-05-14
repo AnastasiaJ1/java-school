@@ -2,6 +2,7 @@ package input;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+
 @Data
 @AllArgsConstructor
 public class EmployeeDTO {
@@ -10,7 +11,6 @@ public class EmployeeDTO {
     private String surname;
     private String jobTitle;
     private Long account;
-
 
 
 }

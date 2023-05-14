@@ -34,42 +34,42 @@ public class Employee {
         String tempEmail;
         String tempStatus;
 
-        if(id != null) tempId = id.toString();
+        if (id != null) tempId = id.toString();
         else tempId = "null";
-        if(lastname != null) tempLastname = lastname;
+        if (lastname != null) tempLastname = lastname;
         else tempLastname = "null";
-        if(firstname != null) tempFirstname = firstname;
+        if (firstname != null) tempFirstname = firstname;
         else tempFirstname = "null";
-        if(surname != null) tempSurname = surname;
+        if (surname != null) tempSurname = surname;
         else tempSurname = "null";
-        if(jobTitle != null) tempJobTitle = jobTitle;
+        if (jobTitle != null) tempJobTitle = jobTitle;
         else tempJobTitle = "null";
-        if(account != null) tempAccount = account.toString();
+        if (account != null) tempAccount = account.toString();
         else tempAccount = "null";
-        if(email != null) tempEmail = email;
+        if (email != null) tempEmail = email;
         else tempEmail = "null";
-        if(status != null) tempStatus = status;
+        if (status != null) tempStatus = status;
         else tempStatus = "null";
-        return  tempId +
+        return tempId +
                 " ; " + tempLastname +
-                " ; " + tempFirstname  +
-                " ; " + tempSurname  +
-                " ; " + tempJobTitle  +
+                " ; " + tempFirstname +
+                " ; " + tempSurname +
+                " ; " + tempJobTitle +
                 " ; " + tempAccount +
-                " ; " + tempEmail  +
+                " ; " + tempEmail +
                 " ; " + tempStatus
                 ;
     }
 
     public void fromString(String fields) {
         List<String> fieldsList = List.of(fields.split(" ; "));
-        if(!fieldsList.get(0).equals("null")) this.setId(Long.parseLong(fieldsList.get(0)));
-        if(!fieldsList.get(1).equals("null")) this.setLastname(fieldsList.get(1));
-        if(!fieldsList.get(2).equals("null")) this.setFirstname(fieldsList.get(2));
-        if(!fieldsList.get(3).equals("null")) this.setSurname(fieldsList.get(3));
-        if(!fieldsList.get(4).equals("null")) this.setJobTitle(fieldsList.get(4));
-        if(!fieldsList.get(5).equals("null")) this.setAccount(Long.parseLong(fieldsList.get(5)));
-        if(!fieldsList.get(6).equals("null")) this.setEmail(fieldsList.get(6));
-        if(!fieldsList.get(7).equals("null")) this.setStatus(fieldsList.get(7));
+        if (!fieldsList.get(0).equals("null")) this.setId(Long.parseLong(fieldsList.get(0)));
+        if (!fieldsList.get(1).equals("null")) this.setLastname(fieldsList.get(1));
+        if (!fieldsList.get(2).equals("null")) this.setFirstname(fieldsList.get(2));
+        if (!fieldsList.get(3).equals("null")) this.setSurname(fieldsList.get(3));
+        if (!fieldsList.get(4).equals("null")) this.setJobTitle(fieldsList.get(4));
+        if (!fieldsList.get(5).equals("null")) this.setAccount(Long.parseLong(fieldsList.get(5)));
+        if (!fieldsList.get(6).equals("null")) this.setEmail(fieldsList.get(6));
+        if (!fieldsList.get(7).equals("null")) this.setStatus(fieldsList.get(7));
     }
 }

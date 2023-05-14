@@ -12,11 +12,11 @@ import java.util.*;
 public class EmployeeRepositoryImpl implements EmployeeRepository {
     @Override
     public boolean create(Employee employee) {
-        try{
+        try {
             Map<Long, Employee> employeeMap = load();
             employeeMap.put(employee.getId(), employee);
             save(employeeMap);
-        } catch (IOException e){
+        } catch (IOException e) {
             System.out.println(e.getMessage());
             return false;
         }
@@ -26,12 +26,12 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 
     @Override
     public boolean update(Employee employee) {
-        try{
+        try {
             Map<Long, Employee> employeeMap = load();
             employeeMap.remove(employee.getId());
             employeeMap.put(employee.getId(), employee);
             save(employeeMap);
-        } catch (IOException e){
+        } catch (IOException e) {
             return false;
         }
 
@@ -40,11 +40,11 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 
     @Override
     public Employee getById(Long id) {
-        try{
+        try {
             Map<Long, Employee> employeeMap = load();
             Employee employee = employeeMap.get(id);
             return employee;
-        } catch (IOException e){
+        } catch (IOException e) {
             return null;
         }
 
@@ -52,32 +52,33 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 
     @Override
     public List<Employee> getAll() {
-        try{
+        try {
             Map<Long, Employee> employeeMap = load();
             return new ArrayList<Employee>(employeeMap.values());
-        } catch (IOException e){
+        } catch (IOException e) {
             return null;
         }
     }
 
     @Override
     public boolean deleteById(Long id) {
-        try{
+        try {
             Map<Long, Employee> employeeMap = load();
-            if(employeeMap.containsKey(id)) {
+            if (employeeMap.containsKey(id)) {
                 employeeMap.remove(id);
                 save(employeeMap);
                 return true;
             }
             return false;
-        } catch (IOException e){
+        } catch (IOException e) {
             return false;
         }
     }
+
     private void save(Map<Long, Employee> map) throws IOException {
         Properties properties = new Properties();
 
-        for (Map.Entry<Long,Employee> entry : map.entrySet()) {
+        for (Map.Entry<Long, Employee> entry : map.entrySet()) {
             Employee employee = entry.getValue();
             properties.put(entry.getKey().toString(), employee.toString());
         }
