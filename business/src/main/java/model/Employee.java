@@ -19,6 +19,7 @@ public class Employee {
     private String email;
     private String status;
 
+    //todo Странный конструктор..
     public Employee(long id) {
         this.setId(id);
     }
