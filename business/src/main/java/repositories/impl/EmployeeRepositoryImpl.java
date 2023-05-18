@@ -11,59 +11,58 @@ import java.util.*;
 
 public class EmployeeRepositoryImpl implements EmployeeRepository {
     @Override
-    public boolean create(Employee employee) {
+    public void create(Employee employee) {
         try {
-            Map<Long, Employee> employeeMap = load();
+            Map<UUID, Employee> employeeMap = load();
             employeeMap.put(employee.getId(), employee);
             save(employeeMap);
         } catch (IOException e) {
-            System.out.println(e.getMessage());
-            return false;
+            e.printStackTrace(System.out);
+
         }
 
-        return true;
     }
 
     @Override
-    public boolean update(Employee employee) {
+    public void update(Employee employee) {
         try {
-            Map<Long, Employee> employeeMap = load();
+            Map<UUID, Employee> employeeMap = load();
             employeeMap.remove(employee.getId());
             employeeMap.put(employee.getId(), employee);
             save(employeeMap);
         } catch (IOException e) {
-            return false;
+            e.printStackTrace(System.out);
         }
 
-        return true;
     }
 
     @Override
-    public Employee getById(Long id) {
+    public Employee getById(UUID id) {
         try {
-            Map<Long, Employee> employeeMap = load();
+            Map<UUID, Employee> employeeMap = load();
             Employee employee = employeeMap.get(id);
             return employee;
         } catch (IOException e) {
-            return null;
+            e.printStackTrace(System.out);
         }
-
+        return null;
     }
 
     @Override
     public List<Employee> getAll() {
         try {
-            Map<Long, Employee> employeeMap = load();
+            Map<UUID, Employee> employeeMap = load();
             return new ArrayList<Employee>(employeeMap.values());
         } catch (IOException e) {
+            e.printStackTrace(System.out);
             return null;
         }
     }
 
     @Override
-    public boolean deleteById(Long id) {
+    public boolean deleteById(UUID id) {
         try {
-            Map<Long, Employee> employeeMap = load();
+            Map<UUID, Employee> employeeMap = load();
             if (employeeMap.containsKey(id)) {
                 employeeMap.remove(id);
                 save(employeeMap);
@@ -71,14 +70,15 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
             }
             return false;
         } catch (IOException e) {
+            e.printStackTrace(System.out);
             return false;
         }
     }
 
-    private void save(Map<Long, Employee> map) throws IOException {
+    private void save(Map<UUID, Employee> map) throws IOException {
         Properties properties = new Properties();
 
-        for (Map.Entry<Long, Employee> entry : map.entrySet()) {
+        for (Map.Entry<UUID, Employee> entry : map.entrySet()) {
             Employee employee = entry.getValue();
             properties.put(entry.getKey().toString(), employee.toString());
         }
@@ -86,8 +86,8 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
         properties.store(new FileOutputStream("/Users/anastasia/IdeaProjects/digdes/java-school/data_properties"), null);
     }
 
-    private Map<Long, Employee> load() throws IOException {
-        Map<Long, Employee> map = new HashMap<Long, Employee>();
+    private Map<UUID, Employee> load() throws IOException {
+        Map<UUID, Employee> map = new HashMap<>();
         Properties properties = new Properties();
         properties.load(new FileInputStream("/Users/anastasia/IdeaProjects/digdes/java-school/data_properties"));
 
@@ -95,7 +95,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
             String employeeString = properties.get(key).toString();
             Employee employee = new Employee();
             employee.fromString(employeeString);
-            map.put(Long.parseLong(key), employee);
+            map.put(UUID.fromString(key), employee);
         }
         return map;
     }

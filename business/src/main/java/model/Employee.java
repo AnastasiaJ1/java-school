@@ -1,16 +1,19 @@
 package model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Employee {
-    private Long id;
+    private UUID id;
     private String lastname;
     private String firstname;
     private String surname;
@@ -19,10 +22,6 @@ public class Employee {
     private String email;
     private String status;
 
-    //todo Странный конструктор..
-    public Employee(long id) {
-        this.setId(id);
-    }
 
     @Override
     public String toString() {
@@ -64,7 +63,7 @@ public class Employee {
 
     public void fromString(String fields) {
         List<String> fieldsList = List.of(fields.split(" ; "));
-        if (!fieldsList.get(0).equals("null")) this.setId(Long.parseLong(fieldsList.get(0)));
+        if (!fieldsList.get(0).equals("null")) this.setId(UUID.fromString(fieldsList.get(0)));
         if (!fieldsList.get(1).equals("null")) this.setLastname(fieldsList.get(1));
         if (!fieldsList.get(2).equals("null")) this.setFirstname(fieldsList.get(2));
         if (!fieldsList.get(3).equals("null")) this.setSurname(fieldsList.get(3));

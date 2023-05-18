@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+                   http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet id="1" author="Anastasia">
+        <createTable tableName="Employees">
+            <column name="id" type="uuid"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="Employees_id_pkey"/>
+            <column name="lastname" type="STRING"/>
+                <constraints nullable="false"/>
+            <column name="firstname" type="STRING"/>
+                <constraints nullable="false"/>
+            <column name="surname" type="STRING"/>
+            <column name="jobtitle" type="STRING"/>
+            <column name="account" type="STRING"/>
+                <constraints unique="true" uniqueConstraintName="TABLE_FIELD_ix1"/>
+            <column name="email" type="STRING"/>
+            <column name="status" type="STRING"/>
+                <constraints nullable="false"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="2" author="Anastasia">
+        <createTable tableName="Project">
+            <column name="id" type="uuid"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="Projects_id_pkey"/>
+            <column name="code" type="STRING"/>
+                <constraints nullable="false" uniqueConstraintName="TABLE_FIELD_ix2"/>
+            <column name="name" type="STRING"/>
+                <constraints nullable="false"/>
+            <column name="description" type="STRING"/>
+            <column name="status" type="STRING"/>
+            <constraints nullable="false"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="3" author="Anastasia">
+        <createTable tableName="ProjectParticipants">
+            <column name="id" type="uuid"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="Project_id_pkey"/>
+            <column name="employeeid" type="uuid"/>
+                <constraints nullable="false" />
+            <column name="projectid" type="uuid"/>
+                <constraints nullable="false"/>
+            <column name="role" type="STRING"/>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="employeeid"
+                                 baseTableName="ProjectParticipants"
+                                 constraintName="fk_ProjectParticipants_Employees_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="Employees"/>
+        <addForeignKeyConstraint baseColumnNames="projectid"
+                                 baseTableName="Project"
+                                 constraintName="fk_ProjectParticipants_Project_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="Project"/>
+    </changeSet>
+    <changeSet id="4" author="Anastasia">
+        <createTable tableName="Tasks">
+            <column name="id" type="uuid"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="Tasks_id_pkey"/>
+            <column name="name" type="STRING"/>
+                <constraints nullable="false" />
+            <column name="description" type="STRING"/>
+            <column name="executor" type="uuid"/>
+            <column name="laborcostshours" type="NUMERIC"/>
+                <constraints nullable="false" />
+            <column name="deadline" type="TIMESTAMP"/>
+                <constraints nullable="false" />
+            <column name="status" type="STRING"/>
+            <column name="author" type="uuid"/>
+            <column name="creationdate" type="TIMESTAMP"/>
+            <column name="changedate" type="TIMESTAMP"/>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="executor"
+                                 baseTableName="Tasks"
+                                 constraintName="fk_Tasks_executor_Employees_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="Employees"/>
+        <addForeignKeyConstraint baseColumnNames="author"
+                                 baseTableName="Tasks"
+                                 constraintName="fk_Tasks_author_Employees_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="Employees"/>
+</databaseChangeLog>

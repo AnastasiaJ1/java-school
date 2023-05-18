@@ -3,13 +3,17 @@ package repositories;
 import model.Employee;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface EmployeeRepository {
 
-//    create, update, getById, getAll, deleteById
-    boolean create(Employee employee);
-    boolean update(Employee employee);
-    Employee getById(Long id);
+    void create(Employee employee);
+
+    void update(Employee employee);
+
+    Employee getById(UUID id);
+
     List<Employee> getAll();
-    boolean deleteById(Long id);
+
+    boolean deleteById(UUID id);
 }
