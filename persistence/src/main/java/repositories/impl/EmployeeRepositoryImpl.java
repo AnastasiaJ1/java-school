@@ -1,13 +1,13 @@
 package repositories.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import model.Employee;
+
 import repositories.EmployeeRepository;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
+
 
 public class EmployeeRepositoryImpl implements EmployeeRepository {
     @Override
@@ -40,8 +40,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
     public Employee getById(UUID id) {
         try {
             Map<UUID, Employee> employeeMap = load();
-            Employee employee = employeeMap.get(id);
-            return employee;
+            return employeeMap.get(id);
         } catch (IOException e) {
             e.printStackTrace(System.out);
         }
@@ -52,7 +51,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
     public List<Employee> getAll() {
         try {
             Map<UUID, Employee> employeeMap = load();
-            return new ArrayList<Employee>(employeeMap.values());
+            return new ArrayList<>(employeeMap.values());
         } catch (IOException e) {
             e.printStackTrace(System.out);
             return null;
@@ -75,26 +74,32 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
         }
     }
 
-    private void save(Map<UUID, Employee> map) throws IOException {
+    private synchronized void save(Map<UUID, Employee> map) throws IOException {
         Properties properties = new Properties();
 
         for (Map.Entry<UUID, Employee> entry : map.entrySet()) {
             Employee employee = entry.getValue();
-            properties.put(entry.getKey().toString(), employee.toString());
+            StringWriter writer = new StringWriter();
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(writer, employee);
+            properties.put(entry.getKey().toString(), writer.toString());
         }
-
-        properties.store(new FileOutputStream("/Users/anastasia/IdeaProjects/digdes/java-school/data_properties"), null);
+        FileOutputStream file = new FileOutputStream("persistence/src/main/resources/data_properties");
+        properties.store(file, null);
+        file.close();
     }
 
-    private Map<UUID, Employee> load() throws IOException {
+    private synchronized Map<UUID, Employee> load() throws IOException {
         Map<UUID, Employee> map = new HashMap<>();
         Properties properties = new Properties();
-        properties.load(new FileInputStream("/Users/anastasia/IdeaProjects/digdes/java-school/data_properties"));
+        FileInputStream file = new FileInputStream("persistence/src/main/resources/data_properties");
+        properties.load(file);
+        file.close();
 
         for (String key : properties.stringPropertyNames()) {
             String employeeString = properties.get(key).toString();
-            Employee employee = new Employee();
-            employee.fromString(employeeString);
+            ObjectMapper mapper = new ObjectMapper();
+            Employee employee = mapper.readValue(employeeString, Employee.class);
             map.put(UUID.fromString(key), employee);
         }
         return map;

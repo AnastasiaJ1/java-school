@@ -87,6 +87,7 @@ public class EmployeeRepositoryImplJDBC implements EmployeeRepository {
                 return employee;
             }
         } catch (SQLException e) {
+            e.printStackTrace(System.out);
             throw new RuntimeException();
         }
         return null;
