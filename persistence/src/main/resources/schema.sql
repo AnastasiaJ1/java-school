@@ -55,3 +55,15 @@ create table tasks
     project_id uuid
         references projects(id)
 );
+
+create table users
+(
+    id uuid not null
+        primary key,
+    username varchar(40) not null
+        unique,
+    password varchar(40) not null,
+    role varchar(200) not null ,
+    id uuid
+        references employees(id)
+);

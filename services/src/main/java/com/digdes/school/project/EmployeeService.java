@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.UUID;
 
 public interface EmployeeService {
-    Employee save(EmployeeDTO employeeDTO);
+    Employee create(EmployeeDTO employeeDTO, UUID id);
 
-    boolean change(Employee employee);
+    boolean update(EmployeeDTO employeeDTO, UUID id);
 
     boolean delete(UUID id);
 
-    List<Employee> search(EmployeeSearchFilter employeeSearchFilter);
+    List<Employee> search(EmployeeDTO employeeDTO);
 
     EmployeeOutDTO getOutDTO(UUID id);
 

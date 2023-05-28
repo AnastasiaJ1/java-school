@@ -1,22 +1,23 @@
 package com.digdes.school.project;
 
-import com.digdes.school.project.filters.EmployeeSearchFilter;
 import com.digdes.school.project.filters.ProjectSearchFilter;
 import com.digdes.school.project.input.ProjectDTO;
 import com.digdes.school.project.model.Project;
+import com.digdes.school.project.enums.ProjectStatus;
 import com.digdes.school.project.output.ProjectOutDTO;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface ProjectService {
-    Project save(ProjectDTO projectDTO);
+    Project create(ProjectDTO projectDTO);
 
-    boolean change(Project project);
+    boolean update(ProjectDTO projectDTO, UUID id);
 
     boolean delete(UUID id);
 
-    List<Project> search(ProjectSearchFilter searchFilter);
+    List<ProjectOutDTO> search(ProjectSearchFilter searchFilter);
 
     ProjectOutDTO get(UUID id);
+    int updateStatus(UUID id, ProjectStatus status);
 }

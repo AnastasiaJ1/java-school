@@ -1,6 +1,6 @@
 package com.digdes.school.project.model;
 
-import com.digdes.school.project.model.enums.ProjectStatus;
+import com.digdes.school.project.enums.ProjectStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,15 +19,15 @@ import java.util.UUID;
 @Table(name = "projects")
 public class Project {
     @Id
-    @Column
+    @Column(name = "id")
     private UUID id;
-    @Column
+    @Column(name = "code")
     private String code;
-    @Column
+    @Column(name = "name")
     private String name;
-    @Column
+    @Column(name = "description")
     private String description;
-    @Column
+    @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private ProjectStatus status;
 }

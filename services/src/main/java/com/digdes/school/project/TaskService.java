@@ -1,21 +1,23 @@
 package com.digdes.school.project;
 
-import com.digdes.school.project.filters.EmployeeSearchFilter;
+import com.digdes.school.project.filters.TaskSearchFilter;
 import com.digdes.school.project.input.TaskDTO;
 import com.digdes.school.project.model.Task;
+import com.digdes.school.project.enums.TaskStatus;
 import com.digdes.school.project.output.TaskOutDTO;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface TaskService {
-    Task save(TaskDTO taskDTO);
+    Task create(TaskDTO taskDTO, UUID taskId);
 
-    boolean change(Task task);
+    boolean update(TaskDTO taskDTO, UUID employeeId, UUID taskId);
 
-    boolean deleteById(UUID id);
+    boolean delete(UUID id);
 
-    List<Task> search(EmployeeSearchFilter searchFilter);
+    List<TaskOutDTO> search(TaskSearchFilter searchFilter);
 
     TaskOutDTO getById(UUID id);
+    int updateStatus(UUID id, TaskStatus status);
 }

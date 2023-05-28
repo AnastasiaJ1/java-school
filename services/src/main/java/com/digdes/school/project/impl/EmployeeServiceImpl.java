@@ -1,22 +1,17 @@
 package com.digdes.school.project.impl;
 
 import com.digdes.school.project.EmployeeService;
-import com.digdes.school.project.filters.EmployeeSearchFilter;
 import com.digdes.school.project.input.EmployeeDTO;
 import com.digdes.school.project.mappers.EmployeeMapper;
 import com.digdes.school.project.model.Employee;
-import com.digdes.school.project.model.enums.EmployeeStatus;
+import com.digdes.school.project.enums.EmployeeStatus;
 import com.digdes.school.project.output.EmployeeOutDTO;
 import com.digdes.school.project.repositories.EmployeeRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import com.digdes.school.project.specifications.EmployeeSpecification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,8 +20,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeMapper mapper;
     private final EmployeeRepository repository;
 
-    @PersistenceContext
-    private EntityManager entityManager;
 
     public EmployeeServiceImpl(EmployeeMapper mapper, EmployeeRepository repository) {
         this.mapper = mapper;
@@ -34,14 +27,22 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Employee save(EmployeeDTO employeeDTO) {
-        return repository.save(mapper.convertToEntity(employeeDTO));
-
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public Employee create(EmployeeDTO employeeDTO, UUID id) {
+        if(repository.existsById(id)) return null;
+        Employee employee = mapper.convertToEntity(employeeDTO);
+        employee.setStatus(EmployeeStatus.ACTIVE);
+        employee.setId(id);
+        if(employee.getLastname() != null && employee.getFirstname() != null
+                && (employee.getAccount() == null || repository.findByAccount(employee.getAccount()).isEmpty()))
+            return repository.save(employee);
+        return null;
     }
 
     @Override
-    public boolean change(Employee employee) {
-        Employee employeePrev = repository.getById(employee.getId());
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public boolean update(EmployeeDTO employee, UUID id) {
+        Employee employeePrev = repository.findById(id).orElse(null);
 
         if (employeePrev == null || employeePrev.getStatus().equals(EmployeeStatus.DELETED))
             return false;
@@ -76,18 +77,14 @@ public class EmployeeServiceImpl implements EmployeeService {
             employeePrev.setEmail(employee.getEmail());
             changeFlag++;
         }
-        if (employee.getStatus() != null
-                && !employee.getStatus().equals(employeePrev.getStatus())) {
-            employeePrev.setStatus(employee.getStatus());
-            changeFlag++;
-        }
         if (changeFlag > 0) repository.save(employeePrev);
         return changeFlag > 0;
     }
 
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public boolean delete(UUID id) {
-        Employee employee = repository.getById(id);
+        Employee employee = repository.findById(id).orElse(null);
         if (employee != null && employee.getStatus() == EmployeeStatus.ACTIVE) {
             employee.setStatus(EmployeeStatus.DELETED);
             repository.save(employee);
@@ -96,64 +93,30 @@ public class EmployeeServiceImpl implements EmployeeService {
         return false;
     }
 
-
     @Override
-    public List<Employee> search(EmployeeSearchFilter employeeSearchFilter) {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Employee> query = builder.createQuery(Employee.class);
-        Root<Employee> r = query.from(Employee.class);
-        List<Predicate> predicate = new ArrayList<>();
-
-        if (employeeSearchFilter.getLastname() != null) {
-            Predicate predicateCode = builder.equal(r.get("lastname"), employeeSearchFilter.getLastname());
-            predicate.add(predicateCode);
-        }
-        if (employeeSearchFilter.getFirstname() != null) {
-            Predicate predicateCode = builder.equal(r.get("firstname"), employeeSearchFilter.getFirstname());
-            predicate.add(predicateCode);
-        }
-        if (employeeSearchFilter.getSurname() != null) {
-            Predicate predicateCode = builder.equal(r.get("surname"), employeeSearchFilter.getSurname());
-            predicate.add(predicateCode);
-        }
-        if (employeeSearchFilter.getJobTitle() != null) {
-            Predicate predicateCode = builder.equal(r.get("job_title"), employeeSearchFilter.getJobTitle());
-            predicate.add(predicateCode);
-        }
-        if (employeeSearchFilter.getAccount() != null) {
-            Predicate predicateCode = builder.equal(r.get("account"), employeeSearchFilter.getAccount());
-            predicate.add(predicateCode);
-        }
-        if (employeeSearchFilter.getEmail() != null) {
-            Predicate predicateCode = builder.equal(r.get("email"), employeeSearchFilter.getEmail());
-            predicate.add(predicateCode);
-        }
-        Predicate predicateCode = builder.equal(r.get("status"), EmployeeStatus.ACTIVE);
-        predicate.add(predicateCode);
-
-
-        Predicate And = builder.and(predicate.toArray(new Predicate[predicate.size()]));
-
-
-        query.where(And);
-        return entityManager.createQuery(query).getResultList();
-
+    public List<Employee> search(EmployeeDTO employeeDTO) {
+        return repository.findAll(EmployeeSpecification.getSpec(employeeDTO));
     }
 
     @Override
     public EmployeeOutDTO getOutDTO(UUID id) {
-        if (repository.existsById(id)) {
-            return mapper.convertToDTO(repository.getById(id));
+        Employee employee = repository.findById(id).orElse(null);
+        if (employee != null) {
+            return mapper.convertToDTO(employee);
         }
         return null;
     }
 
     @Override
     public Employee get(UUID id) {
-        return repository.getById(id);
+        return repository.findById(id).orElse(null);
     }
 
     public void deleteAll() {
         repository.deleteAll();
+    }
+
+    public EmployeeOutDTO getByAccount(String account) {
+        return mapper.convertToDTO(repository.findByAccount(account).orElse(null));
     }
 }

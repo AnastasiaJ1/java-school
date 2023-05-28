@@ -104,4 +104,25 @@
                                  referencedColumnNames="id"
                                  referencedTableName="projects"/>
     </changeSet>
+    <changeSet id="5" author="Anastasia">
+        <createTable tableName="users">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="userss_id_pkey"/>
+            </column>
+            <column name="username" type="VARCHAR(100)">
+                <constraints nullable="false" uniqueConstraintName="TABLE_FIELD_ix3"/>
+            </column>
+            <column name="password" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="VARCHAR(40)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="id"
+                                 baseTableName="employees"
+                                 constraintName="fk_employees_id_users_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
 </databaseChangeLog>

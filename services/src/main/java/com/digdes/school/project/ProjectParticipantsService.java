@@ -7,15 +7,16 @@ import com.digdes.school.project.model.Employee;
 import com.digdes.school.project.model.ProjectParticipants;
 import com.digdes.school.project.model.id.ProjectParticipantsId;
 import com.digdes.school.project.output.EmployeeOutDTO;
+import com.digdes.school.project.output.ProjectParticipantsOutDTO;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface ProjectParticipantsService {
-    ProjectParticipants save(ProjectParticipantsDTO projectParticipantsDTO);
+    ProjectParticipants create(ProjectParticipantsDTO projectParticipantsDTO, UUID projectId);
 
     boolean delete(ProjectParticipantsId id);
 
 
-    List<ProjectParticipants> getAllProjectParticipants(UUID projectId);
+    List<ProjectParticipantsOutDTO> getAllProjectParticipants(UUID projectId);
 }

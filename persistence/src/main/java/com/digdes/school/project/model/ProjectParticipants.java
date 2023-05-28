@@ -1,6 +1,6 @@
 package com.digdes.school.project.model;
 
-import com.digdes.school.project.model.enums.Role;
+import com.digdes.school.project.enums.Role;
 import com.digdes.school.project.model.id.ProjectParticipantsId;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,12 +19,15 @@ import java.util.UUID;
 @IdClass(ProjectParticipantsId.class)
 public class ProjectParticipants {
     @Id
-    @Column
+    @Column(name = "employee_id")
     private UUID employeeId;
     @Id
-    @Column
+    @Column(name = "project_id")
     private UUID projectId;
-    @Column
+    @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Role role;
+    @OneToOne(targetEntity = Employee.class)
+    @JoinColumn(name = "employee_id", insertable=false, updatable=false, referencedColumnName = "id")
+    private Employee employee;
 }

@@ -2,12 +2,9 @@ package com.digdes.school.project.mappers;
 
 import com.digdes.school.project.input.ProjectDTO;
 import com.digdes.school.project.model.Project;
-import com.digdes.school.project.model.enums.ProjectStatus;
 import com.digdes.school.project.output.ProjectOutDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 @Component
 public class ProjectMapper {
@@ -19,8 +16,7 @@ public class ProjectMapper {
 
     public Project convertToEntity(ProjectDTO projectDTO) {
         Project project = modelMapper.map(projectDTO, Project.class);
-        project.setId(UUID.randomUUID());
-        project.setStatus(ProjectStatus.DRAFT);
+
         return project;
     }
 

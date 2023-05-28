@@ -1,4 +1,4 @@
-package com.digdes.school.project.model.enums;
+package com.digdes.school.project.enums;
 
 public enum EmployeeStatus {
     ACTIVE,
