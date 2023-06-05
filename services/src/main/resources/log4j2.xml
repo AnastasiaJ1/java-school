@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+        <File type="File" name="FileInfo" fileName="services/src/main/resources/app.log">
+            <Layout type="PatternLayout" pattern="%d %p %C{1.} [%t] %m%n" />
+        </File>
+        <File type="File" name="FileError" fileName="services/src/main/resources/error.log">
+            <Layout type="PatternLayout" pattern="%d %p %C{1.} [%t] %m%n" />
+        </File>
+    </Appenders>
+    <Loggers>
+        <Root level="trace" >
+            <AppenderRef ref="Console" level="info" />
+            <AppenderRef ref="FileInfo" level="info" />
+            <AppenderRef ref="FileError" level="error" />
+        </Root>
+    </Loggers>
+</Configuration>

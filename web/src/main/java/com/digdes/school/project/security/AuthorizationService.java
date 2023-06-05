@@ -1,5 +1,6 @@
 package com.digdes.school.project.security;
 
+import com.digdes.school.project.enums.UserRole;
 import com.digdes.school.project.repositories.ProjectParticipantsRepository;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,7 @@ public class AuthorizationService {
         this.projectParticipantsRepository = projectParticipantsRepository;
     }
     public boolean employeeUpdateAccess(UUID employeeId, UserDetailsImpl userDetails){
-        return employeeId.equals(userDetails.getId()) || userDetails.getAuthorities().contains("ROLE_ADMINISTRATOR");
+        return employeeId.equals(userDetails.getId()) || userDetails.getAuthorities().contains("ROLE_" + UserRole.ADMINISTRATOR);
     }
 
     public boolean taskCreateAccess(UUID projectId, UserDetailsImpl userDetails){

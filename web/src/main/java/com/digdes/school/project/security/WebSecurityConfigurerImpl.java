@@ -1,5 +1,6 @@
 package com.digdes.school.project.security;
 
+import com.digdes.school.project.enums.UserRole;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -19,9 +20,9 @@ public class WebSecurityConfigurerImpl{
                         , "/api/project/*/team/add").hasAnyRole("USER")
                 .and()
                 .authorizeRequests().requestMatchers(HttpMethod.PUT, "/api/empl/*"
-                        , "/api/project/*", "/api/project/status/*", "/api/task/*", "/api/task/status/*").hasAnyRole("USER")
-                .and().authorizeRequests().requestMatchers(HttpMethod.GET, "/api/**").hasAnyRole("ADMINISTRATOR", "USER")
-                .and().authorizeRequests().requestMatchers(HttpMethod.DELETE, "/api/**").hasAnyRole("ADMINISTRATOR")
+                        , "/api/project/*", "/api/project/status/*", "/api/task/*", "/api/task/status/*").hasAnyRole(UserRole.USER.toString())
+                .and().authorizeRequests().requestMatchers(HttpMethod.GET, "/api/**").hasAnyRole(UserRole.ADMINISTRATOR.toString(), UserRole.USER.toString())
+                .and().authorizeRequests().requestMatchers(HttpMethod.DELETE, "/api/**").hasAnyRole(UserRole.ADMINISTRATOR.toString())
                 .and().authorizeRequests().requestMatchers( "/api/auth/signup", "/swagger-ui.html/**", "/swagger-resources/**", "/v2/api-docs")
                 .anonymous().anyRequest().authenticated()
                 .and()
@@ -29,8 +30,5 @@ public class WebSecurityConfigurerImpl{
     }
 
 
-    @Bean
-    public PasswordEncoder getEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+
 }

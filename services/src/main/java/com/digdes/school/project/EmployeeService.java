@@ -15,7 +15,7 @@ public interface EmployeeService {
 
     boolean delete(UUID id);
 
-    List<Employee> search(EmployeeDTO employeeDTO);
+    List<EmployeeOutDTO> search(EmployeeDTO employeeDTO);
 
     EmployeeOutDTO getOutDTO(UUID id);
 

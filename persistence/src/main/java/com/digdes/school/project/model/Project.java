@@ -14,7 +14,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Proxy(lazy = false)
 @Entity
 @Table(name = "projects")
 public class Project {

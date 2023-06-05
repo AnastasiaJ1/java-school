@@ -45,3 +45,6 @@ business/target/
 dto/target/
 services/target/
 web/target/
+
+services/src/main/resources/*.log
+

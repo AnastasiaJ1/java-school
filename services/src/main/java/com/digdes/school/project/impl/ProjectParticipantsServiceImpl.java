@@ -9,6 +9,8 @@ import com.digdes.school.project.output.ProjectParticipantsOutDTO;
 import com.digdes.school.project.repositories.EmployeeRepository;
 import com.digdes.school.project.repositories.ProjectParticipantsRepository;
 import com.digdes.school.project.repositories.ProjectRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,7 @@ public class ProjectParticipantsServiceImpl implements ProjectParticipantsServic
     private final ProjectParticipantsRepository repository;
     private final EmployeeRepository employeeRepository;
     private final ProjectRepository projectRepository;
+    private static final Logger logger = LogManager.getLogger(ProjectParticipantsServiceImpl.class);
 
     public ProjectParticipantsServiceImpl(ProjectParticipantsMapper mapper, ProjectParticipantsRepository repository, EmployeeRepository employeeRepository, ProjectRepository projectRepository) {
         this.mapper = mapper;
@@ -32,8 +35,8 @@ public class ProjectParticipantsServiceImpl implements ProjectParticipantsServic
     }
 
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE)
     public ProjectParticipants create(ProjectParticipantsDTO projectParticipantsDTO, UUID projectId) {
+        logger.info("creating project participant: " + projectParticipantsDTO);
         ProjectParticipants projectParticipants = mapper.convertToEntity(projectParticipantsDTO);
         projectParticipants.setProjectId(projectId);
         if(!employeeRepository.existsById(projectParticipants.getEmployeeId())
@@ -44,8 +47,8 @@ public class ProjectParticipantsServiceImpl implements ProjectParticipantsServic
     }
 
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE)
     public boolean delete(ProjectParticipantsId id) {
+        logger.info("deleting project participant");
         if (repository.existsById(id)) {
             repository.deleteById(id);
             return true;
@@ -55,6 +58,7 @@ public class ProjectParticipantsServiceImpl implements ProjectParticipantsServic
 
     @Override
     public List<ProjectParticipantsOutDTO> getAllProjectParticipants(UUID projectId) {
+        logger.info("get project team");
         List<ProjectParticipants> projectParticipantsList = repository.getByProjectId(projectId);
         if(projectParticipantsList == null) return null;
         return projectParticipantsList

@@ -6,12 +6,13 @@ import com.digdes.school.project.input.ProjectDTO;
 import com.digdes.school.project.mappers.ProjectMapper;
 import com.digdes.school.project.model.Project;
 import com.digdes.school.project.enums.ProjectStatus;
+import com.digdes.school.project.output.ProjectIdOutDTO;
 import com.digdes.school.project.output.ProjectOutDTO;
 import com.digdes.school.project.repositories.ProjectRepository;
 import com.digdes.school.project.specifications.ProjectSpecification;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +23,8 @@ import java.util.stream.Collectors;
 public class ProjectServiceImpl implements ProjectService {
     private final ProjectMapper mapper;
     private final ProjectRepository repository;
+    private static final Logger logger = LogManager.getLogger(ProjectServiceImpl.class);
+
 
 
     public ProjectServiceImpl(ProjectMapper mapper, ProjectRepository repository) {
@@ -30,16 +33,17 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Project create(ProjectDTO projectDTO) {
+    public ProjectIdOutDTO create(ProjectDTO projectDTO) {
+        logger.info("creating project: " + projectDTO);
         Project project = mapper.convertToEntity(projectDTO);
         project.setId(UUID.randomUUID());
         project.setStatus(ProjectStatus.DRAFT);
-        return repository.save(project);
+        return new ProjectIdOutDTO(repository.save(project).getId());
     }
 
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE)
     public boolean update(ProjectDTO projectDTO, UUID id) {
+        logger.info("updating project: " + projectDTO);
         Project projectPrev = repository.findById(id).orElse(null);
 
         if (projectPrev == null)
@@ -61,13 +65,18 @@ public class ProjectServiceImpl implements ProjectService {
             changeFlag++;
         }
 
-        if (changeFlag > 0) repository.save(projectPrev);
+        if (changeFlag > 0) {
+            repository.save(projectPrev);
+            logger.debug("project has been updated");
+        } else {
+            logger.debug("nothing to update");
+        }
         return changeFlag > 0;
     }
 
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE)
     public boolean delete(UUID id) {
+        logger.info("deleting project");
         if (repository.existsById(id)) {
             repository.deleteById(id);
             return true;
@@ -77,18 +86,20 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<ProjectOutDTO> search(ProjectSearchFilter searchFilter) {
+        logger.info("searching project");
         return repository.findAll(ProjectSpecification.getSpec(searchFilter))
                 .stream().map(mapper::convertToDTO).collect(Collectors.toList());
     }
 
     @Override
     public ProjectOutDTO get(UUID id) {
+        logger.info("getting project");
         return mapper.convertToDTO(repository.findById(id).orElse(null));
     }
 
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE)
     public int updateStatus(UUID id, ProjectStatus status) {
+        logger.info("updating project status");
         Project project = repository.findById(id).orElse(null);
         if(project == null) return 2;
         if(project.getStatus().compareTo(status) < 0){

@@ -6,12 +6,13 @@ import com.digdes.school.project.input.TaskDTO;
 import com.digdes.school.project.mappers.TaskMapper;
 import com.digdes.school.project.model.Task;
 import com.digdes.school.project.enums.TaskStatus;
+import com.digdes.school.project.output.TaskIdOutDTO;
 import com.digdes.school.project.output.TaskOutDTO;
 import com.digdes.school.project.repositories.TaskRepository;
 import com.digdes.school.project.specifications.TaskSpecification;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository repository;
     private final TaskMapper mapper;
+    private static final Logger logger = LogManager.getLogger(TaskServiceImpl.class);
 
     public TaskServiceImpl(TaskRepository repository, TaskMapper mapper) {
         this.repository = repository;
@@ -29,18 +31,19 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task create(TaskDTO taskDTO, UUID taskId) {
+    public TaskIdOutDTO create(TaskDTO taskDTO, UUID taskId) {
+        logger.info("creating task: " + taskDTO);
         Task task = mapper.convertToEntity(taskDTO);
         task.setId(UUID.randomUUID());
         task.setCreationDate(new Date(System.currentTimeMillis()));
         task.setChangeDate(new Date(System.currentTimeMillis()));
         task.setStatus(TaskStatus.NEW);
-        return repository.save(task);
+        return new TaskIdOutDTO(repository.save(task).getId());
     }
 
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE)
     public boolean update(TaskDTO taskDTO, UUID employeeId, UUID taskId) {
+        logger.info("updating task: " + taskDTO);
         Task taskPrev = repository.findById(taskId).orElse(null);
 
         if (taskPrev == null)
@@ -78,6 +81,9 @@ public class TaskServiceImpl implements TaskService {
             taskPrev.setAuthor(employeeId);
             taskPrev.setChangeDate(new Date(System.currentTimeMillis()));
             repository.save(taskPrev);
+            logger.debug("task has been updated");
+        } else {
+            logger.debug("nothing to update");
         }
         return changeFlag > 0;
     }
@@ -89,6 +95,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<TaskOutDTO> search(TaskSearchFilter searchFilter) {
+        logger.info("searching task");
         return repository.findAll(TaskSpecification.getSpec(searchFilter))
                 .stream().map(mapper::convertToDTO).collect(Collectors.toList());
     }
@@ -99,11 +106,15 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE)
     public int updateStatus(UUID id, TaskStatus status) {
+        logger.info("updating task status");
         Task task = repository.findById(id).orElse(null);
-        if(task == null) return 2;
+        if(task == null) {
+            logger.debug("task not found");
+            return 2;
+        }
         if(task.getStatus().compareTo(status) < 0){
+            logger.debug("status cannot be updated");
             task.setStatus(status);
             repository.save(task);
             return 0;

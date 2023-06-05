@@ -1,5 +1,6 @@
 package com.digdes.school.project.mappers;
 
+import com.digdes.school.project.enums.UserRole;
 import com.digdes.school.project.input.UserDTO;
 import com.digdes.school.project.model.User;
 import org.modelmapper.ModelMapper;
@@ -16,7 +17,7 @@ public class UserMapper {
     public User convertToEntity(UserDTO userDTO) {
         User user = modelMapper.map(userDTO, User.class);
         user.setId(UUID.randomUUID());
-        user.setRole("USER");
+        user.setRole(UserRole.USER);
         return user;
     }
 

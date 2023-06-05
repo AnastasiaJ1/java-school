@@ -2,15 +2,15 @@ package com.digdes.school.project;
 
 import com.digdes.school.project.filters.TaskSearchFilter;
 import com.digdes.school.project.input.TaskDTO;
-import com.digdes.school.project.model.Task;
 import com.digdes.school.project.enums.TaskStatus;
+import com.digdes.school.project.output.TaskIdOutDTO;
 import com.digdes.school.project.output.TaskOutDTO;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface TaskService {
-    Task create(TaskDTO taskDTO, UUID taskId);
+    TaskIdOutDTO create(TaskDTO taskDTO, UUID taskId);
 
     boolean update(TaskDTO taskDTO, UUID employeeId, UUID taskId);
 
