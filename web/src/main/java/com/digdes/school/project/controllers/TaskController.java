@@ -29,39 +29,13 @@ import java.util.UUID;
 public class TaskController {
     private final TaskServiceImpl taskService;
     private final AuthorizationService authorizationService;
-    private final EmailServiceImpl emailService;
-    private final MessageProducer messageProducer;
 
-    public TaskController(TaskServiceImpl taskService, AuthorizationService authorizationService, EmailServiceImpl emailService, MessageProducer messageProducer) {
+    public TaskController(TaskServiceImpl taskService, AuthorizationService authorizationService) {
         this.taskService = taskService;
         this.authorizationService = authorizationService;
-        this.emailService = emailService;
-        this.messageProducer = messageProducer;
     }
 
-    @GetMapping(value = "/simple-email")
-    public ResponseEntity<?> sendSimpleEmail(@RequestParam(required = false) String email) {
 
-        try {
-            String emailAddr = "masha.ivanova.1999@yandex.ru";
-            if(email != null) emailAddr = email;
-            Map<String, Object> context = new HashMap<String, Object>();
-            context.put("name", "Иван");
-            context.put("taskName", "Задача");
-            EmailContext emailContext = EmailContext.builder().email(emailAddr).templateLocation("email")
-                    .to(emailAddr).subject("S").from("dolgaya1999a@gmail.com" +
-                            "")
-                    .context(context).build();
-//            emailService.sendMail(emailContext);
-            messageProducer.sendMessage(emailContext);
-        } catch (Exception e) {
-            System.out.println(e.getStackTrace());
-            e.printStackTrace();
-            return new ResponseEntity<>("Unable to send email", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        return new ResponseEntity<>("Please check your inbox", HttpStatus.OK);
-    }
     @Operation(summary = "Создание задачи")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Задача создана"),
