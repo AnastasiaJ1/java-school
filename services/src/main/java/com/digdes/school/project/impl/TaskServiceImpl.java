@@ -1,9 +1,12 @@
 package com.digdes.school.project.impl;
 
 import com.digdes.school.project.TaskService;
+import com.digdes.school.project.amqp.MessageProducer;
 import com.digdes.school.project.filters.TaskSearchFilter;
 import com.digdes.school.project.input.TaskDTO;
 import com.digdes.school.project.mappers.TaskMapper;
+import com.digdes.school.project.model.EmailContext;
+import com.digdes.school.project.model.Employee;
 import com.digdes.school.project.model.Task;
 import com.digdes.school.project.enums.TaskStatus;
 import com.digdes.school.project.output.TaskIdOutDTO;
@@ -12,22 +15,30 @@ import com.digdes.school.project.repositories.TaskRepository;
 import com.digdes.school.project.specifications.TaskSpecification;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository repository;
+    private final EmailInfoService emailInfoService;
     private final TaskMapper mapper;
+    private final MessageProducer messageProducer;
     private static final Logger logger = LogManager.getLogger(TaskServiceImpl.class);
 
-    public TaskServiceImpl(TaskRepository repository, TaskMapper mapper) {
+    public TaskServiceImpl(TaskRepository repository, EmailInfoService emailInfoService, TaskMapper mapper, MessageProducer messageProducer) {
         this.repository = repository;
+        this.emailInfoService = emailInfoService;
         this.mapper = mapper;
+        this.messageProducer = messageProducer;
     }
 
     @Override
@@ -38,7 +49,22 @@ public class TaskServiceImpl implements TaskService {
         task.setCreationDate(new Date(System.currentTimeMillis()));
         task.setChangeDate(new Date(System.currentTimeMillis()));
         task.setStatus(TaskStatus.NEW);
-        return new TaskIdOutDTO(repository.save(task).getId());
+        TaskIdOutDTO taskIdOutDTO = new TaskIdOutDTO(repository.save(task).getId());
+        try {
+            Employee employee = emailInfoService.getEmployee(task.getExecutor());
+            if(employee != null && employee.getEmail() != null){
+                Map<String, Object> context = new HashMap<>();
+                context.put("name", employee.getFirstname());
+                context.put("taskName", task.getName());
+                EmailContext emailContext = EmailContext.builder().email(emailInfoService.getUsername()).templateLocation("email")
+                        .to(employee.getEmail()).subject("Новая задача").from(emailInfoService.getUsername())
+                        .context(context).build();
+                messageProducer.sendMessage(emailContext);
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+        return taskIdOutDTO;
     }
 
     @Override
