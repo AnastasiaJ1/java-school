@@ -112,11 +112,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeOutDTO getOutDTO(UUID id) {
         logger.info("getting employee");
-        Optional<Employee> employee = repository.findById(id);
-        if (employee.isEmpty()) {
-            return mapper.convertToDTO(employee.get());
-        }
-        return null;
+        return repository.findById(id).map(mapper::convertToDTO).orElse(null);
     }
 
     @Override

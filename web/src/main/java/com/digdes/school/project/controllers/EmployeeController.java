@@ -76,6 +76,7 @@ public class EmployeeController {
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<EmployeeOutDTO> get(@RequestParam(value = "id", required=false) UUID id
             , @RequestParam(value = "account", required=false) String account) {
+        System.out.println(id);
         EmployeeOutDTO employee = null;
         if((id == null && account == null)
                 || (id != null && account != null)) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
