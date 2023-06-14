@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(value = "/api/project/")
+@RequestMapping(value = "/api/project")
 public class ProjectParticipantsController {
     private final ProjectParticipantsService projectParticipantsService;
 
@@ -29,7 +29,7 @@ public class ProjectParticipantsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Запрос успешно выполнен"),
             @ApiResponse(responseCode = "400", description = "Неверные параметры")})
-    @PostMapping(value = "{id}/team/add", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/team/add/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> create(@RequestBody ProjectParticipantsDTO projectParticipantsDTO, @PathVariable UUID id) {
         if(projectParticipantsService.create(projectParticipantsDTO, id) != null) return ResponseEntity.status(HttpStatus.CREATED).build();
         return ResponseEntity.badRequest().build();
@@ -39,7 +39,7 @@ public class ProjectParticipantsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Запрос успешно выполнен"),
             @ApiResponse(responseCode = "404", description = "Проект или сотрудник не найдены")})
-    @DeleteMapping("{id1}/team/{id}")
+    @DeleteMapping("/team/{id1}/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id, @PathVariable UUID id1) {
         if(projectParticipantsService.delete(new ProjectParticipantsId(id1, id))) return ResponseEntity.status(HttpStatus.OK).build();
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -49,7 +49,7 @@ public class ProjectParticipantsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Запрос успешно выполнен"),
             @ApiResponse(responseCode = "404", description = "Проект не найден")})
-    @GetMapping(value = "{id}/team/", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/team/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ProjectParticipantsOutDTO>> getTeam(@PathVariable UUID id) {
         List<ProjectParticipantsOutDTO> list = projectParticipantsService.getAllProjectParticipants(id);
         if(list == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

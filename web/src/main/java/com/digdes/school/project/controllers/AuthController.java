@@ -42,19 +42,19 @@ public class AuthController {
 
     @Autowired
     JwtUtils jwtUtils;
-
-    @PostMapping("/api/auth/signin")
-    public ResponseEntity<?> authenticateUser(@RequestBody UserDTO userDTO) {
+    @Operation(summary = "Получение токена")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Пользователь зарегистрирован"),
+            @ApiResponse(responseCode = "400", description = "Пользователь уже был зарегистрирован")})
+    @PostMapping(value = "/api/auth/signin", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<JwtResponse> authenticateUser(@RequestBody UserDTO userDTO) {
         System.out.println("xfe"+ userDTO);
 
 
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(userDTO.getUsername(), userDTO.getPassword()));
-        System.out.println("xfe1"+ userDTO);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        System.out.println("xfe2"+ userDTO);
         String jwt = jwtUtils.generateJwtToken(authentication);
-        System.out.println("xfe3"+ userDTO);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
                 .collect(Collectors.toList());

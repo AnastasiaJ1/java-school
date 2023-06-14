@@ -1,0 +1,42 @@
+services:
+  app:
+    build: .
+    container_name: app
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - rabbitmq
+    environment:
+      DATASOURCE_URL: jdbc:postgresql://localhost:5432/postgres
+      DATASOURCE_USERNAME: postgres
+      DATASOURCE_PASSWORD: password
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      SMTP_USERNAME:
+      SMTP_PASSWORD:
+      SMTP_TEST_TO:
+    ports:
+      - "8080:8080"
+
+  postgres:
+    image: postgres:14.4
+    container_name: postgres
+    restart: always
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD="trust"
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - POSTGRES_PASSWORD=password
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"

@@ -40,7 +40,7 @@ public class TaskController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Задача создана"),
             @ApiResponse(responseCode = "400", description = "Не все обязательные поля заполнены")})
-    @PostMapping(value = "/api/project/{id}/task/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/api/project/task/create/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TaskIdOutDTO> create(@RequestBody TaskDTO taskDTO, @PathVariable UUID id) {
         UserDetailsImpl userDetails =
                 (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
