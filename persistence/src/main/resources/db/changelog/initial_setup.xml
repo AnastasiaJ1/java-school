@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="
+                   http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet id="1" author="Anastasia">
+        <createTable tableName="employees">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="employees_id_pkey"/>
+            </column>
+            <column name="lastname" type="VARCHAR(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="firstname" type="VARCHAR(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="surname" type="VARCHAR(40)"/>
+            <column name="job_title" type="VARCHAR(40)"/>
+            <column name="account" type="VARCHAR(40)">
+                <constraints unique="true" uniqueConstraintName="TABLE_FIELD_ix1"/>
+            </column>
+            <column name="email" type="VARCHAR(40)"/>
+            <column name="status" type="VARCHAR(40)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="2" author="Anastasia">
+        <createTable tableName="projects">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="projects_id_pkey"/>
+            </column>
+            <column name="code" type="VARCHAR(40)">
+                <constraints nullable="false" uniqueConstraintName="TABLE_FIELD_ix2"/>
+            </column>
+            <column name="name" type="VARCHAR(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(200)"/>
+            <column name="status" type="VARCHAR(40)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="3" author="Anastasia">
+        <createTable tableName="project_participants">
+            <column name="employee_id" type="uuid">
+                <constraints nullable="false" />
+            </column>
+            <column name="project_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="VARCHAR(40)"/>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="employee_id"
+                                 baseTableName="project_participants"
+                                 constraintName="fk_project_participants_employees_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="employees"/>
+        <addForeignKeyConstraint baseColumnNames="project_id"
+                                 baseTableName="project_participants"
+                                 constraintName="fk_project_participants_projects_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="projects"/>
+        <addPrimaryKey
+                columnNames="employee_id, project_id"
+                constraintName="pk_project_participants"
+                tableName="project_participants"/>
+    </changeSet>
+    <changeSet id="4" author="Anastasia">
+        <createTable tableName="tasks">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="tasks_id_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(40)">
+                <constraints nullable="false" />
+            </column>
+            <column name="description" type="VARCHAR(200)"/>
+            <column name="executor" type="uuid"/>
+            <column name="labor_costs_hours" type="NUMERIC">
+                <constraints nullable="false" />
+            </column>
+            <column name="deadline" type="TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+            <column name="status" type="VARCHAR(40)"/>
+            <column name="author" type="uuid"/>
+            <column name="creation_date" type="TIMESTAMP"/>
+            <column name="change_date" type="TIMESTAMP"/>
+            <column name="project_id" type="uuid"/>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="executor"
+                                 baseTableName="tasks"
+                                 constraintName="fk_tasks_executor_employees_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="employees"/>
+        <addForeignKeyConstraint baseColumnNames="author"
+                                 baseTableName="tasks"
+                                 constraintName="fk_tasks_author_employees_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="employees"/>
+        <addForeignKeyConstraint baseColumnNames="project_id"
+                                 baseTableName="tasks"
+                                 constraintName="fk_tasks_author_projects_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="projects"/>
+    </changeSet>
+    <changeSet id="5" author="Anastasia">
+        <createTable tableName="users">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="userss_id_pkey"/>
+            </column>
+            <column name="username" type="VARCHAR(100)">
+                <constraints nullable="false" uniqueConstraintName="TABLE_FIELD_ix3"/>
+            </column>
+            <column name="password" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="VARCHAR(40)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="id"
+                                 baseTableName="employees"
+                                 constraintName="fk_employees_id_users_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+</databaseChangeLog>
